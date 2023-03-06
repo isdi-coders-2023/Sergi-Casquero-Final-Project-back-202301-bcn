@@ -15,6 +15,7 @@ module.exports = {
       rules: { "@typescript-eslint/naming-convention": "off" },
     },
     {
+      files: ["*.ts", "*.tsx"],
       rules: {
         "@typescript-eslint/consistent-type-definitions": [
           "error",
