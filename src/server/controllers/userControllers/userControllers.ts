@@ -1,6 +1,6 @@
 import { type NextFunction, type Request, type Response } from "express";
-import { type UserStructure } from "./types.js";
 import bcryptjs from "bcryptjs";
+import { type UserStructure } from "./types.js";
 import User from "../../../database/models/User/User.js";
 import { CustomError } from "../../../CustomError/CustomError.js";
 
@@ -14,13 +14,13 @@ export const createUser = async (
 
     const hashedPassword = await bcryptjs.hash(password, 10);
 
-    const user = await User.create({
+    await User.create({
       username,
       email,
       password: hashedPassword,
     });
 
-    res.status(201).json({ message: `${user.username} account created!` });
+    res.status(201).json({ message: `${username} account created!` });
   } catch (error) {
     const customError = new CustomError(
       (error as Error).message,
