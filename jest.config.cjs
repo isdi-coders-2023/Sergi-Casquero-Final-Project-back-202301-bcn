@@ -11,5 +11,6 @@ module.exports = {
     "!src/setupTests.ts",
     "!src/loadEnvironment.ts",
     "!src/server/startServer.ts",
+    "!src/database/connectDatabase.ts",
   ],
 };
