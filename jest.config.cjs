@@ -9,5 +9,6 @@ module.exports = {
     "!src/index.ts",
     "!src/react-app-env.d.ts",
     "!src/setupTests.ts",
+    "!src/loadEnvironment.ts",
   ],
 };

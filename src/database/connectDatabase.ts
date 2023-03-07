@@ -1,4 +1,7 @@
 import mongoose from "mongoose";
+import createDebug from "debug";
+
+export const debug = createDebug("rockfit:database");
 
 const connectDatabase = async (url: string) => {
   mongoose.set("strictQuery", false);
@@ -13,6 +16,7 @@ const connectDatabase = async (url: string) => {
 
   try {
     await mongoose.connect(url);
+    debug("Connected to database");
   } catch (error) {
     throw new Error("Error while connecting to data base.");
   }
