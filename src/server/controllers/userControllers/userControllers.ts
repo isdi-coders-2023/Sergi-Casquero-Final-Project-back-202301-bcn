@@ -4,7 +4,7 @@ import { type UserStructure } from "./types.js";
 import User from "../../../database/models/User/User.js";
 import { CustomError } from "../../../CustomError/CustomError.js";
 
-export const createUser = async (
+export const registerUser = async (
   req: Request<Record<string, unknown>, Record<string, unknown>, UserStructure>,
   res: Response,
   next: NextFunction
