@@ -103,7 +103,7 @@ describe("Given a loginUser controller", () => {
     });
   });
 
-  describe("When it receives a request with email 'sergi@isdi.com' and password 'wr0ngP455w0rd' and they are invalid", () => {
+  describe("When it receives a request with a username that doesn't exist in the database", () => {
     test("Then it should call its next method with a status code 401 and a message 'Wrong credentials'", async () => {
       const expectedError = new CustomError(
         "User not found",
@@ -114,6 +114,22 @@ describe("Given a loginUser controller", () => {
       User.findOne = jest.fn().mockImplementationOnce(() => ({
         exec: jest.fn().mockResolvedValue(undefined),
       }));
+
+      await loginUser(req, res as Response, next);
+
+      expect(next).toHaveBeenCalledWith(expectedError);
+    });
+  });
+
+  describe("When it receives a request with username 'sergi' and password 'wr0ngP455w0rd'", () => {
+    test("Then it should call its next method with a status code 401 and a message 'Wrong credentials'", async () => {
+      const expectedError = new CustomError(
+        "User not found",
+        401,
+        "User not found"
+      );
+
+      bcrypt.compare = jest.fn().mockResolvedValue(false);
 
       await loginUser(req, res as Response, next);
 
