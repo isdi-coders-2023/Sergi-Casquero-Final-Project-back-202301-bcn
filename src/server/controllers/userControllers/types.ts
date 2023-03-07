@@ -5,3 +5,10 @@ export interface UserStructure {
 }
 
 export type UserCredentials = Pick<UserStructure, "email" | "password">;
+
+import { type JwtPayload } from "jsonwebtoken";
+
+export interface CustomJwtPayload extends JwtPayload {
+  username: string;
+  sub: string;
+}
