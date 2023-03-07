@@ -1,13 +1,10 @@
-import request from "supertest";
 import { type Request, type Response } from "express";
 import User from "../../../database/models/User/User.js";
-import { registerUser } from "./userControllers";
+import { registerUser } from "./userControllers.js";
 import mongoose from "mongoose";
-import app from "../../index.js";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import connectDatabase from "../../../database/connectDatabase.js";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
 import { type UserStructure } from "./types";
 
 let server: MongoMemoryServer;
