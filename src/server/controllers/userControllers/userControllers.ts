@@ -28,7 +28,7 @@ export const registerUser = async (
     res.status(201).json({ message: `${username} account created!` });
   } catch (error) {
     const customError = new CustomError(
-      (error as Error).message,
+      "Couldn't Create the user",
       500,
       "Couldn't create the user"
     );
