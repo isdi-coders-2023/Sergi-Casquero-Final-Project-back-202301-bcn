@@ -145,13 +145,22 @@ describe("Given a loginUser controller", () => {
     });
   });
 
-  describe("When it receives a request with username 'sergi' and password 'wr0ngP455w0rd'", () => {
-    test("Then it should call its next method with a status code 401 and a message 'Wrong credentials'", async () => {
+  describe("When it receives a request with username 'sergi' and passwords don't match'", () => {
+    test("Then it should call its next method with a status code 401 and a message 'User not found'", async () => {
       const expectedError = new CustomError(
         "User not found",
         401,
         "User not found"
       );
+
+      req.body = mockedUser;
+
+      User.findOne = jest.fn().mockImplementationOnce(() => ({
+        exec: jest.fn().mockResolvedValue({
+          ...mockedUser,
+          _id: new mongoose.Types.ObjectId(),
+        }),
+      }));
 
       bcrypt.compare = jest.fn().mockResolvedValue(false);
 
