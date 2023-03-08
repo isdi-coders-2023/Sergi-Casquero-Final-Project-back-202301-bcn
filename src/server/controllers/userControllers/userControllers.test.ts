@@ -9,8 +9,6 @@ import connectDatabase from "../../../database/connectDatabase.js";
 import { type UserCredentials, type UserStructure } from "./types.js";
 import CustomError from "../../../CustomError/CustomError.js";
 
-let server: MongoMemoryServer;
-
 const mockedUser: UserStructure = {
   username: "sergi",
   email: "sergi@isdi.com",
@@ -21,6 +19,8 @@ const mockedCredentials: UserCredentials = {
   email: "sergi@isdi.com",
   password: "p455w0rd",
 };
+
+let server: MongoMemoryServer;
 
 beforeAll(async () => {
   server = await MongoMemoryServer.create();
