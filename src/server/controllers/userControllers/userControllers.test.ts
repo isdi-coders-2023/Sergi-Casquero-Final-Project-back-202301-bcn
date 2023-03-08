@@ -37,20 +37,20 @@ afterEach(async () => {
 });
 
 describe("Given a registerUser controller", () => {
+  const req = {} as Request<
+    Record<string, unknown>,
+    Record<string, unknown>,
+    UserStructure
+  >;
+
+  const res = {
+    status: jest.fn().mockReturnThis(),
+    json: jest.fn(),
+  } as Partial<Response>;
+  const next = jest.fn() as NextFunction;
+
   describe("When it receives a request with username 'sergi', email 'sergi@isdi.com' and password 'p455w0rd'", () => {
     test("Then it should call its status method with code 201 and its json method with 'message: sergi account created!'", async () => {
-      const req = {} as Request<
-        Record<string, unknown>,
-        Record<string, unknown>,
-        UserStructure
-      >;
-
-      const res = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
-      } as Partial<Response>;
-      const next = () => ({});
-
       const expectedStatusCode = 201;
       const expectedBodyResponse = { message: "sergi account created!" };
 
@@ -62,6 +62,30 @@ describe("Given a registerUser controller", () => {
 
       expect(res.status).toHaveBeenCalledWith(expectedStatusCode);
       expect(res.json).toHaveBeenCalledWith(expectedBodyResponse);
+    });
+  });
+
+  describe("When it receives a request with username 'sergi', email 'sergi@isdi.com' and password 'p455' which is invalid", () => {
+    test("Then it should call its next method", async () => {
+      const mockedInvalidUser = {
+        username: "",
+        email: "sergi@isdi.com",
+        password: "p455",
+      };
+
+      const expectedError = new CustomError(
+        "Couldn't Create the user",
+        500,
+        "Couldn't create the user"
+      );
+
+      req.body = mockedInvalidUser;
+      bcrypt.hash = jest.fn().mockResolvedValue("asdfasdg3425342dsafsdfg");
+      User.create = jest.fn().mockRejectedValue(undefined);
+
+      await registerUser(req, res as Response, next);
+
+      expect(next).toHaveBeenCalledWith(expectedError);
     });
   });
 });
