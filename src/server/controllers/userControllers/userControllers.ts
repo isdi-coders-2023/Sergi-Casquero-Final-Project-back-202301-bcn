@@ -1,16 +1,13 @@
 import { type NextFunction, type Request, type Response } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import {
-  type CustomJwtPayload,
-  type UserCredentials,
-  type UserStructure,
-} from "./types.js";
+import { type CustomJwtPayload, type UserCredentials } from "./types.js";
 import User from "../../../database/models/User/User.js";
 import { CustomError } from "../../../CustomError/CustomError.js";
+import { type CustomRequest } from "../../../types.js";
 
 export const registerUser = async (
-  req: Request<Record<string, unknown>, Record<string, unknown>, UserStructure>,
+  req: CustomRequest,
   res: Response,
   next: NextFunction
 ) => {
@@ -54,8 +51,7 @@ export const loginUser = async (
     if (!user) {
       const error = new CustomError("User not found", 401, "User not found");
 
-      next(error);
-      return;
+      throw error;
     }
 
     if (!(await bcrypt.compare(password, user.password))) {
@@ -65,8 +61,7 @@ export const loginUser = async (
         "Wrong credentials"
       );
 
-      next(error);
-      return;
+      throw error;
     }
 
     const jwtPayload: CustomJwtPayload = {

@@ -2,12 +2,11 @@ import { type Request, type Response, type NextFunction } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
-import { MongoMemoryServer } from "mongodb-memory-server";
 import User from "../../../database/models/User/User.js";
 import { loginUser, registerUser } from "./userControllers.js";
-import connectDatabase from "../../../database/connectDatabase.js";
 import { type UserCredentials, type UserStructure } from "./types.js";
 import CustomError from "../../../CustomError/CustomError.js";
+import { type CustomCredentials, type CustomRequest } from "../../../types.js";
 
 const mockedUser: UserStructure = {
   username: "sergi",
@@ -20,34 +19,18 @@ const mockedCredentials: UserCredentials = {
   password: "p455w0rd",
 };
 
-let server: MongoMemoryServer;
-
-beforeAll(async () => {
-  server = await MongoMemoryServer.create();
-  await connectDatabase(server.getUri());
-});
-
-afterAll(async () => {
-  await server.stop();
-  await mongoose.connection.close();
-});
-
 afterEach(async () => {
-  await User.deleteMany(mockedUser);
+  jest.clearAllMocks();
 });
 
 describe("Given a registerUser controller", () => {
-  const req = {} as Request<
-    Record<string, unknown>,
-    Record<string, unknown>,
-    UserStructure
-  >;
+  const req: Partial<Request> = {};
 
-  const res = {
+  const res: Partial<Response> = {
     status: jest.fn().mockReturnThis(),
     json: jest.fn(),
-  } as Partial<Response>;
-  const next = jest.fn() as NextFunction;
+  };
+  const next: Partial<NextFunction> = jest.fn();
 
   describe("When it receives a request with username 'sergi', email 'sergi@isdi.com' and password 'p455w0rd'", () => {
     test("Then it should call its status method with code 201 and its json method with 'message: sergi account created!'", async () => {
@@ -58,7 +41,11 @@ describe("Given a registerUser controller", () => {
       bcrypt.hash = jest.fn().mockResolvedValue("asdfasdg3425342dsafsdfg");
       User.create = jest.fn().mockResolvedValue(mockedUser);
 
-      await registerUser(req, res as Response, next);
+      await registerUser(
+        req as CustomRequest,
+        res as Response,
+        next as NextFunction
+      );
 
       expect(res.status).toHaveBeenCalledWith(expectedStatusCode);
       expect(res.json).toHaveBeenCalledWith(expectedBodyResponse);
@@ -83,7 +70,11 @@ describe("Given a registerUser controller", () => {
       bcrypt.hash = jest.fn().mockResolvedValue("asdfasdg3425342dsafsdfg");
       User.create = jest.fn().mockRejectedValue(undefined);
 
-      await registerUser(req, res as Response, next);
+      await registerUser(
+        req as CustomRequest,
+        res as Response,
+        next as NextFunction
+      );
 
       expect(next).toHaveBeenCalledWith(expectedError);
     });
@@ -91,17 +82,13 @@ describe("Given a registerUser controller", () => {
 });
 
 describe("Given a loginUser controller", () => {
-  const req = {} as Request<
-    Record<string, unknown>,
-    Record<string, unknown>,
-    UserCredentials
-  >;
+  const req: Partial<Request> = {};
   req.body = mockedCredentials;
 
-  const res = {
+  const res: Partial<Response> = {
     status: jest.fn().mockReturnThis(),
     json: jest.fn(),
-  } as Partial<Response>;
+  };
 
   const next = jest.fn() as NextFunction;
 
@@ -120,7 +107,7 @@ describe("Given a loginUser controller", () => {
       bcrypt.compare = jest.fn().mockResolvedValue(true);
       jwt.sign = jest.fn().mockReturnValue("token");
 
-      await loginUser(req, res as Response, next);
+      await loginUser(req as CustomCredentials, res as Response, next);
 
       expect(res.status).toHaveBeenCalledWith(expectedStatusCode);
       expect(res.json).toHaveBeenCalledWith(expectedBodyResponse);
@@ -139,18 +126,18 @@ describe("Given a loginUser controller", () => {
         exec: jest.fn().mockResolvedValue(undefined),
       }));
 
-      await loginUser(req, res as Response, next);
+      await loginUser(req as CustomCredentials, res as Response, next);
 
       expect(next).toHaveBeenCalledWith(expectedError);
     });
   });
 
   describe("When it receives a request with username 'sergi' and passwords don't match'", () => {
-    test("Then it should call its next method with a status code 401 and a message 'User not found'", async () => {
+    test("Then it should call its next method with a status code 401 and a message 'Wrong credentials'", async () => {
       const expectedError = new CustomError(
-        "User not found",
+        "Wrong credentials",
         401,
-        "User not found"
+        "Wrong credentials"
       );
 
       req.body = mockedUser;
@@ -164,7 +151,7 @@ describe("Given a loginUser controller", () => {
 
       bcrypt.compare = jest.fn().mockResolvedValue(false);
 
-      await loginUser(req, res as Response, next);
+      await loginUser(req as CustomCredentials, res as Response, next);
 
       expect(next).toHaveBeenCalledWith(expectedError);
     });
