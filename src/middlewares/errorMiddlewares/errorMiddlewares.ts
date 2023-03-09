@@ -1,3 +1,4 @@
+import "../../loadEnvironment";
 import createDebug from "debug";
 import { type NextFunction, type Request, type Response } from "express";
 import { CustomError } from "../../CustomError/CustomError.js";
