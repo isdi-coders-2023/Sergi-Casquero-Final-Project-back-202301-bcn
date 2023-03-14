@@ -23,15 +23,15 @@ beforeEach(() => {
   jest.clearAllMocks();
 });
 
+const req: Partial<Request> = {};
+
+const res: Partial<Response> = {
+  status: jest.fn().mockReturnThis(),
+  json: jest.fn(),
+};
+const next: Partial<NextFunction> = jest.fn();
+
 describe("Given a registerUser controller", () => {
-  const req: Partial<Request> = {};
-
-  const res: Partial<Response> = {
-    status: jest.fn().mockReturnThis(),
-    json: jest.fn(),
-  };
-  const next: Partial<NextFunction> = jest.fn();
-
   describe("When it receives a request with username 'sergi', email 'sergi@isdi.com' and password 'p455w0rd'", () => {
     test("Then it should call its status method with code 201 and its json method with 'message: sergi account created!'", async () => {
       const expectedStatusCode = 201;
@@ -49,6 +49,36 @@ describe("Given a registerUser controller", () => {
 
       expect(res.status).toHaveBeenCalledWith(expectedStatusCode);
       expect(res.json).toHaveBeenCalledWith(expectedBodyResponse);
+    });
+  });
+
+  describe("When it receives a request with username 'sergi', email 'sergi@isdi.com' and password 'p455' which is invalid", () => {
+    test("Then it should call its next method", async () => {
+      const mockedInvalidUser = {
+        username: "",
+        email: "sergi@isdi.com",
+        password: "p455",
+      };
+
+      const expectedError = new CustomError(
+        "Couldn't create the user",
+        500,
+        "Couldn't create the user"
+      );
+
+      const error = new Error("Couldn't create the user");
+
+      req.body = mockedInvalidUser;
+      bcrypt.hash = jest.fn().mockResolvedValue("asdfasdg3425342dsafsdfg");
+      User.create = jest.fn().mockRejectedValue(error);
+
+      await registerUser(
+        req as CustomRequest,
+        res as Response,
+        next as NextFunction
+      );
+
+      expect(next).toHaveBeenCalledWith(expectedError);
     });
   });
 });
