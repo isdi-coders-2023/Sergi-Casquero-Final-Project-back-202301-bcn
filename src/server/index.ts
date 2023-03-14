@@ -7,6 +7,7 @@ import {
   generalError,
   notFoundError,
 } from "./middlewares/errorMiddlewares/errorMiddlewares.js";
+import workoutsRouter from "./routers/workoutsRouter/workoutsRouter.js";
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.use(morgan("dev"));
 app.use(cors(options));
 
 app.use("/user", userRouter);
+app.use("/workouts", workoutsRouter);
 
 app.use(notFoundError);
 app.use(generalError);
