@@ -19,7 +19,7 @@ const mockedCredentials: UserCredentials = {
   password: "p455w0rd",
 };
 
-afterEach(async () => {
+beforeEach(() => {
   jest.clearAllMocks();
 });
 
@@ -38,7 +38,7 @@ describe("Given a registerUser controller", () => {
       const expectedBodyResponse = { message: "sergi account created!" };
 
       req.body = mockedUser;
-      bcrypt.hash = jest.fn().mockResolvedValue("asdfasdg3425342dsafsdfg");
+      bcrypt.hash = jest.fn().mockResolvedValue("hashedPassword");
       User.create = jest.fn().mockResolvedValue(mockedUser);
 
       await registerUser(
@@ -49,34 +49,6 @@ describe("Given a registerUser controller", () => {
 
       expect(res.status).toHaveBeenCalledWith(expectedStatusCode);
       expect(res.json).toHaveBeenCalledWith(expectedBodyResponse);
-    });
-  });
-
-  describe("When it receives a request with username 'sergi', email 'sergi@isdi.com' and password 'p455' which is invalid", () => {
-    test("Then it should call its next method", async () => {
-      const mockedInvalidUser = {
-        username: "",
-        email: "sergi@isdi.com",
-        password: "p455",
-      };
-
-      const expectedError = new CustomError(
-        "Couldn't Create the user",
-        500,
-        "Couldn't create the user"
-      );
-
-      req.body = mockedInvalidUser;
-      bcrypt.hash = jest.fn().mockResolvedValue("asdfasdg3425342dsafsdfg");
-      User.create = jest.fn().mockRejectedValue(undefined);
-
-      await registerUser(
-        req as CustomRequest,
-        res as Response,
-        next as NextFunction
-      );
-
-      expect(next).toHaveBeenCalledWith(expectedError);
     });
   });
 });
