@@ -3,9 +3,9 @@ import { Joi, validate } from "express-validation";
 import {
   loginUser,
   registerUser,
-} from "../controllers/userControllers/userControllers.js";
-import loginSchema from "../schemas/loginSchema.js";
-import registerSchema from "../schemas/registerSchema.js";
+} from "../../controllers/userControllers/userControllers.js";
+import loginSchema from "../../schemas/loginSchema.js";
+import registerSchema from "../../schemas/registerSchema.js";
 
 const userRouter = Router();
 

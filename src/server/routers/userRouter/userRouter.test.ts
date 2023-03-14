@@ -3,10 +3,10 @@ import request from "supertest";
 import bcrypt from "bcryptjs";
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
-import app from "..";
-import { type UserStructure } from "../controllers/userControllers/types.js";
-import User from "../../database/models/User/User.js";
-import connectDatabase from "../../database/connectDatabase.js";
+import app from "../..";
+import { type UserStructure } from "../../controllers/userControllers/types.js";
+import User from "../../../database/models/User/User.js";
+import connectDatabase from "../../../database/connectDatabase.js";
 
 const mockedUser: UserStructure = {
   username: "sergi",
