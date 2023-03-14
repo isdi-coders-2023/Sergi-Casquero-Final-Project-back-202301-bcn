@@ -56,6 +56,10 @@ describe("Given a POST 'user/login' endpoint", () => {
         token: "token",
       }));
       const hashedpassword = await bcrypt.hash(mockedUser.password, 10);
+      const mockedCredentials = {
+        email: "sergi@isdi.com",
+        password: "sergi123",
+      };
 
       await User.create({
         ...mockedUser,
@@ -65,7 +69,7 @@ describe("Given a POST 'user/login' endpoint", () => {
 
       const response = await request(app)
         .post(endpoint)
-        .send(mockedUser)
+        .send(mockedCredentials)
         .expect(expectedStatus);
     });
   });
