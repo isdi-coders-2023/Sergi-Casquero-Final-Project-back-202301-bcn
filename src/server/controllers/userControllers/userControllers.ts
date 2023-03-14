@@ -11,9 +11,9 @@ export const registerUser = async (
   res: Response,
   next: NextFunction
 ) => {
-  try {
-    const { username, email, password } = req.body;
+  const { username, email, password } = req.body;
 
+  try {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     await User.create({
@@ -24,13 +24,7 @@ export const registerUser = async (
 
     res.status(201).json({ message: `${username} account created!` });
   } catch (error) {
-    const customError = new CustomError(
-      "Couldn't Create the user",
-      500,
-      "Couldn't create the user"
-    );
-
-    next(customError);
+    next(error);
   }
 };
 
